@@ -1,133 +1,85 @@
 
-===========================================================
-Unit 1 DISCUSSION: Python OOP, Namespaces, and Copying
-===========================================================
-
-INSTRUCTIONS:
-In this assignment, you will build and explore object-oriented programming (OOP) concepts in Python.
-You are provided with starter code containing TODO sections. Your task is to complete, modify, and
-analyze the code to demonstrate understanding of inheritance, namespaces, and object copying.
-"""
-
-
+="Unit 1: Python OOP, namespaces, and copying using equipment records."""
 from copy import copy, deepcopy
 
 
-# TODO 1:
-# Create a parent class.
-#
-# Requirements:
-# - Include at least one class variable.
-# - Include at least two instance variables.
-# - Include a constructor (__init__).
-# - Include a method that returns or displays information about the object.
-#
-# Replace the pass statement with your implementation.
-
 class ParentClass:
-    pass
+    equipment_category = "General equipment"
 
+    def __init__(self, name, serial_number):
+        if not name or not serial_number:
+            raise ValueError("Equipment name and serial number are required")
+        self.name = name
+        self.serial_number = serial_number
 
-# TODO 2:
-# Create a child class that inherits from the parent class.
-#
-# Requirements:
-# - Use inheritance.
-# - Add at least one new class variable.
-# - Add at least two new instance variables.
-# - Add at least one new method.
-# - Override a method from the parent class.
-#
-# Replace the pass statement with your implementation.
+    def display_info(self):
+        return f"{self.name} (Serial: {self.serial_number})"
+
 
 class ChildClass(ParentClass):
-    pass
+    equipment_type = "Tracked equipment"
 
+    def __init__(self, name, serial_number, location, status, maintenance_history=None):
+        super().__init__(name, serial_number)
+        self.location = location
+        self.status = status
+        self.maintenance_history = list(maintenance_history) if maintenance_history is not None else []
 
-# TODO 3:
-# Create a function that demonstrates class namespaces and instance namespaces.
-#
-# Your function should:
-# - Create at least two objects of the child class.
-# - Access a class variable through the class itself.
-# - Access the same class variable through an object.
-# - Add a new attribute to only one object after it is created.
-# - Display each object's namespace using __dict__.
-# - Display information about the class namespace.
+    def display_info(self):
+        return f"{super().display_info()} | Location: {self.location} | Status: {self.status}"
+
+    def add_maintenance(self, record):
+        if not record:
+            raise ValueError("Maintenance record cannot be empty")
+        self.maintenance_history.append(record)
+
+    def check_readiness(self):
+        return "Ready for use" if self.status.strip().lower() == "operational" else "Needs attention"
+
 
 def demonstrate_namespaces():
     print("\n=== Namespace Demonstration ===")
-    print("TODO: Implement namespace demonstration")
+    first = ChildClass("Radio", "R-100", "Storage", "Operational")
+    second = ChildClass("Laptop", "L-200", "Office", "Maintenance")
+    print("Class variable through class:", ParentClass.equipment_category)
+    print("Same class variable through object:", first.equipment_category)
+    print("Child class variable:", ChildClass.equipment_type)
+    first.assigned_to = "Team A"
+    print("First object's namespace:", first.__dict__)
+    print("Second object's namespace:", second.__dict__)
+    print("Parent class namespace keys:", list(ParentClass.__dict__.keys()))
+    print("Child class namespace keys:", list(ChildClass.__dict__.keys()))
+    print("Only first object has assigned_to:", hasattr(first, "assigned_to") and not hasattr(second, "assigned_to"))
 
-
-# TODO 4:
-# Create a function that demonstrates shallow copying and deep copying.
-#
-# Requirements:
-# - Create an object that contains nested mutable data.
-# - Create a shallow copy.
-# - Create a deep copy.
-# - Modify the original object's nested data.
-# - Display the original object, shallow copy, and deep copy.
-# - Use comments to explain the difference between shallow and deep copying.
 
 def demonstrate_copying():
     print("\n=== Copy Demonstration ===")
-    print("TODO: Implement shallow copy and deep copy demonstration")
+    original = ChildClass("Generator", "G-300", "Motor Pool", "Operational", ["Initial inspection"])
+    shallow = copy(original)
+    deep = deepcopy(original)
+    original.add_maintenance("Oil change")
+    print("Original history:", original.maintenance_history)
+    print("Shallow copy history:", shallow.maintenance_history)
+    print("Deep copy history:", deep.maintenance_history)
+    # A shallow copy makes a new outer object but shares its nested list.
+    # A deep copy makes a new outer object and an independent nested list.
+    print("Shallow shares history list:", original.maintenance_history is shallow.maintenance_history)
+    print("Deep shares history list:", original.maintenance_history is deep.maintenance_history)
 
-
-# TODO 5:
-# Complete the main function.
-#
-# Requirements:
-# - Create at least one object from the parent class.
-# - Create at least one object from the child class.
-# - Demonstrate inheritance by calling methods.
-# - Call your namespace demonstration function.
-# - Call your copy demonstration function.
 
 def main():
     print("=== Unit 1 OOP Assignment ===")
-
-    print("\nTODO: Create and test your parent object")
-
-    print("\nTODO: Create and test your child object")
-
+    parent = ParentClass("Printer", "P-001")
+    child = ChildClass("Radio", "R-100", "Storage", "Operational")
+    print("\nParent:", parent.display_info())
+    print("Child (overridden method):", child.display_info())
+    print("Inherited name:", child.name)
+    print("Readiness:", child.check_readiness())
+    child.status = "Maintenance"
+    print("Readiness after status change:", child.check_readiness())
     demonstrate_namespaces()
     demonstrate_copying()
 
 
 if __name__ == "__main__":
     main()
-
-## Implementation Documentation
-
-I created a Python program that used object-oriented programming to represent an equipment management system. I created a parent class called `ParentClass` that stored basic equipment information, including the equipment name and serial number. I also created a child class called `ChildClass` that inherited information from the parent and added details such as location, equipment status, and maintenance history.I used inheritance to avoid rewriting the same code in multiple places. The child class also overrode the `display_info()` method so it could display additional information.
-
-For the namespace demonstration, I created two equipment objects and used `__dict__` to show their individual attributes. I also accessed a class variable through both the class and an object. This helped demonstrate how class variables can be shared while instance attributes remain separate.
-
-For the copying demonstration, I used `copy()` and `deepcopy()` to compare shallow and deep copies. I added a maintenance record to the original object's list and showed how the shallow copy reflected that change while the deep copy remained unchanged. This demonstrated how nested mutable data can share references between objects.
-
-As my own extension, I added a `check_readiness()` method that checked whether equipment was operational or needed attention before use.
-
-Unit 1 Reflection
-
-This assignment helped me understand how object-oriented programming works in Python and why it is useful for organizing code. I learned how inheritance allows a child class to reuse information from a parent class, how namespaces separate class and instance attributes, and how shallow and deep copying handle data differently.
-
-One challenge was understanding why changing the original maintenance list also changed the shallow copy. I learned that a shallow copy still shares references to nested objects, while a deep copy creates independent copies. Testing the maintenance history helped make that difference clearer.
-
-Compared to procedural programming, I think OOP is more useful for larger projects because it keeps related information and methods together. Procedural programming can be simpler for smaller tasks, but OOP makes it easier to reuse code and update individual parts without rewriting the entire program. Although creating classes adds some extra code and planning, it can reduce maintenance work as applications grow.
-
-I used an equipment management example because it connects programming to a practical situation. These concepts could also help me develop applications for technology and cybersecurity in the future.
-
-## Testing
-
-I designed the program to demonstrate the following:
-
-- Creating parent and child objects and displaying their information.
-- Using inheritance and overriding a method.
-- Comparing class and instance namespaces.
-- Demonstrating shallow and deep copying with maintenance records.
-- Checking equipment readiness using the student-created extension.
-
-The copying demonstration was designed to show that the shallow copy shared the original maintenance list, while the deep copy maintained an independent list.
