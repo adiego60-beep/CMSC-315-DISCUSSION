@@ -1,5 +1,5 @@
 
-="Unit 1: Python OOP, namespaces, and copying using equipment records."""
+"""Unit 1: Python OOP, namespaces, and copying using equipment records."""
 from copy import copy, deepcopy
 
 
